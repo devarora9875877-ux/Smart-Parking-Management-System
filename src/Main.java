@@ -37,15 +37,64 @@ public class Main {
 
         System.out.println("\n--- Vehicles After Removal ---");
         admin.displayVehicles(registry);
-        // BILLING, VALIDATION, PAYMENT AND HISTORY
 
+        // PARKING LOT, FLOORS, SLOTS, TICKETS AND MANAGER
+        System.out.println("\n--- Initializing Parking Lot ---");
+        ParkingLot parkingLot = new ParkingLot("Smart Parking Lot");
+        parkingLot.addFloor(new ParkingFloor(1));
+        parkingLot.addFloor(new ParkingFloor(2));
+        ParkingManager parkingManager = new ParkingManager(parkingLot);
+
+        System.out.println("\n--- Parking Registered Vehicle ---");
+        Vehicle parkedCar = registry.searchVehicle("PB01AB1234");
+        ParkingTicket ticket = parkingManager.parkVehicle(parkedCar);
+        if (ticket != null) {
+            System.out.println("Vehicle parked successfully.");
+            ticket.displayTicketDetails();
+        } else {
+            System.out.println("Unable to park vehicle.");
+        }
+
+        System.out.println("\n--- Active Parking Tickets ---");
+        parkingManager.displayActiveTickets();
+
+        System.out.println("\n--- Searching Parked Vehicle ---");
+        ParkingTicket foundTicket = parkingManager.searchParkedVehicle("PB01AB1234");
+        if (foundTicket != null) {
+            foundTicket.displayTicketDetails();
+        } else {
+            System.out.println("Vehicle is not parked.");
+        }
+
+        System.out.println("\n--- Parking Lot Status (Occupied) ---");
+        parkingManager.displayParkingStatus();
+
+        System.out.println("\n--- Exiting Parked Vehicle ---");
+        ParkingTicket completedTicket = parkingManager.exitVehicle("PB01AB1234");
+        if (completedTicket != null) {
+            System.out.println("Vehicle exited successfully.");
+            completedTicket.displayTicketDetails();
+        } else {
+            System.out.println("Vehicle is not parked.");
+        }
+
+        System.out.println("\n--- Parking Lot Status (After Exit) ---");
+        parkingManager.displayParkingStatus();
+
+        // BILLING, VALIDATION, PAYMENT AND HISTORY
         try {
             InputValidator validator = new InputValidator();
             ParkingHistory history = new ParkingHistory();
 
-            String vehicleNumber = "PB01AB1234";
-            String vehicleType = "Car";
-            int hours = 3;
+            String vehicleNumber = (completedTicket != null)
+                    ? completedTicket.getVehicle().getRegistrationNumber()
+                    : "PB01AB1234";
+            String vehicleType = (completedTicket != null)
+                    ? completedTicket.getVehicle().getVehicleType()
+                    : "Car";
+            int hours = (completedTicket != null && completedTicket.getParkingDurationMinutes() > 0)
+                    ? (int) Math.ceil(completedTicket.getParkingDurationMinutes() / 60.0)
+                    : 3;
 
             // Input Validation
             if (!validator.isValidVehicleNumber(vehicleNumber)) {
