@@ -37,5 +37,50 @@ public class Main {
 
         System.out.println("\n--- Vehicles After Removal ---");
         admin.displayVehicles(registry);
+        // BILLING, VALIDATION, PAYMENT AND HISTORY
+
+        try {
+            InputValidator validator = new InputValidator();
+            ParkingHistory history = new ParkingHistory();
+
+            String vehicleNumber = "PB01AB1234";
+            String vehicleType = "Car";
+            int hours = 3;
+
+            // Input Validation
+            if (!validator.isValidVehicleNumber(vehicleNumber)) {
+                throw new ParkingException("Invalid vehicle number!");
+            }
+
+            if (!validator.isValidVehicleType(vehicleType)) {
+                throw new ParkingException("Invalid vehicle type!");
+            }
+
+            if (!validator.isValidHours(hours)) {
+                throw new ParkingException("Invalid parking hours!");
+            }
+
+            System.out.println("\n--- Billing ---");
+
+            // Billing and Rate Calculation
+            Billing bill = new Billing(vehicleNumber, hours);
+            bill.generateBill(vehicleType);
+
+            double amount = bill.getTotalAmount();
+
+            // Payment
+            System.out.println("\n--- Payment ---");
+            Payment payment = new Payment(amount, "UPI");
+            payment.makePayment();
+            payment.displayPayment();
+
+            // Parking History
+            System.out.println("\n--- Parking History ---");
+            history.addRecord(vehicleNumber, vehicleType, hours, amount);
+            history.displayHistory();
+
+        } catch (ParkingException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 }
