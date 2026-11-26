@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -5,131 +7,301 @@ public class Main {
         VehicleRegistry registry = new VehicleRegistry();
         Admin admin = new Admin(1, "ParkingAdmin");
 
-        Vehicle car = new Car("PB01AB1234", "Toyota", "Fortuner");
-        Vehicle bike = new Bike("PB01XY5678", "Royal Enfield", "Classic 350");
+        Scanner sc = new Scanner(System.in);
 
-        Customer customer1 = new Customer(101, "Dev", "9876543210", car);
-        Customer customer2 = new Customer(102, "Rahul", "9876543211", bike);
+        int choice;
 
-        System.out.println("--- Registering Vehicles ---");
-        admin.registerVehicle(registry, car);
-        admin.registerVehicle(registry, bike);
+        do {
 
-        System.out.println("\n--- Registering Customers ---");
-        admin.registerCustomer(registry, customer1);
-        admin.registerCustomer(registry, customer2);
+            System.out.println("\n===== ADMIN MENU =====");
+            System.out.println("1. Register Vehicle");
+            System.out.println("2. Register Customer");
+            System.out.println("3. Display Vehicles");
+            System.out.println("4. Display Customers");
+            System.out.println("5. Search Vehicle");
+            System.out.println("6. Remove Vehicle");
+            System.out.println("7. Continue to Parking Module");
+            System.out.print("Enter Choice: ");
 
-        System.out.println("\n--- All Vehicles ---");
-        admin.displayVehicles(registry);
+            choice = sc.nextInt();
+            sc.nextLine();
 
-        System.out.println("\n--- All Customers ---");
-        admin.displayCustomers(registry);
+            switch (choice) {
 
-        System.out.println("\n--- Searching for a Vehicle ---");
-        admin.searchVehicle(registry, "PB01AB1234");
+                case 1:
 
-        System.out.println("\n--- Testing Duplicate Registration ---");
-        Vehicle duplicateCar = new Car("PB01AB1234", "Honda", "City");
-        admin.registerVehicle(registry, duplicateCar);
+                    System.out.print("Enter Vehicle Type (Car/Bike): ");
+                    String type = sc.nextLine();
 
-        System.out.println("\n--- Removing a Vehicle ---");
-        admin.removeVehicle(registry, "PB01XY5678");
+                    System.out.print("Enter Registration Number: ");
+                    String regNo = sc.nextLine();
 
-        System.out.println("\n--- Vehicles After Removal ---");
-        admin.displayVehicles(registry);
+                    System.out.print("Enter Brand: ");
+                    String brand = sc.nextLine();
 
-        // PARKING LOT, FLOORS, SLOTS, TICKETS AND MANAGER
+                    System.out.print("Enter Vehicle Name: ");
+                    String vehicleName = sc.nextLine();
+
+                    Vehicle vehicle;
+
+                    if (type.equalsIgnoreCase("Car")) {
+                        vehicle = new Car(regNo, brand, vehicleName);
+                    } else if (type.equalsIgnoreCase("Bike")) {
+                        vehicle = new Bike(regNo, brand, vehicleName);
+                    } else {
+                        System.out.println("Invalid Vehicle Type.");
+                        break;
+                    }
+
+                    admin.registerVehicle(registry, vehicle);
+                    break;
+
+                case 2:
+
+                    System.out.print("Enter Customer ID: ");
+                    int id = sc.nextInt();
+                    sc.nextLine();
+
+                    System.out.print("Enter Customer Name: ");
+                    String name = sc.nextLine();
+
+                    System.out.print("Enter Phone Number: ");
+                    String phone = sc.nextLine();
+
+                    System.out.print("Enter Registered Vehicle Number: ");
+                    String vehicleNo = sc.nextLine();
+
+                    Vehicle customerVehicle = registry.searchVehicle(vehicleNo);
+
+                    if (customerVehicle == null) {
+                        System.out.println("Vehicle not found. Register vehicle first.");
+                    } else {
+
+                        Customer customer = new Customer(id, name, phone, customerVehicle);
+
+                        admin.registerCustomer(registry, customer);
+                    }
+
+                    break;
+
+                case 3:
+
+                    admin.displayVehicles(registry);
+
+                    break;
+
+                case 4:
+
+                    admin.displayCustomers(registry);
+
+                    break;
+
+                case 5:
+
+                    System.out.print("Enter Registration Number: ");
+                    String search = sc.nextLine();
+
+                    admin.searchVehicle(registry, search);
+
+                    break;
+
+                case 6:
+
+                    System.out.print("Enter Registration Number: ");
+                    String remove = sc.nextLine();
+
+                    admin.removeVehicle(registry, remove);
+
+                    break;
+
+                case 7:
+
+                    System.out.println("Continuing to Parking Module...");
+
+                    break;
+
+                default:
+
+                    System.out.println("Invalid Choice.");
+
+            }
+
+        } while (choice != 7);
+
         System.out.println("\n--- Initializing Parking Lot ---");
+
         ParkingLot parkingLot = new ParkingLot("Smart Parking Lot");
         parkingLot.addFloor(new ParkingFloor(1));
         parkingLot.addFloor(new ParkingFloor(2));
+
         ParkingManager parkingManager = new ParkingManager(parkingLot);
+        ParkingHistory history = new ParkingHistory();
 
-        System.out.println("\n--- Parking Registered Vehicle ---");
-        Vehicle parkedCar = registry.searchVehicle("PB01AB1234");
-        ParkingTicket ticket = parkingManager.parkVehicle(parkedCar);
-        if (ticket != null) {
-            System.out.println("Vehicle parked successfully.");
-            ticket.displayTicketDetails();
-        } else {
-            System.out.println("Unable to park vehicle.");
-        }
+        int parkingChoice;
 
-        System.out.println("\n--- Active Parking Tickets ---");
-        parkingManager.displayActiveTickets();
+        do {
 
-        System.out.println("\n--- Searching Parked Vehicle ---");
-        ParkingTicket foundTicket = parkingManager.searchParkedVehicle("PB01AB1234");
-        if (foundTicket != null) {
-            foundTicket.displayTicketDetails();
-        } else {
-            System.out.println("Vehicle is not parked.");
-        }
+            System.out.println("\n===== PARKING MENU =====");
+            System.out.println("1. Park Vehicle");
+            System.out.println("2. Search Parked Vehicle");
+            System.out.println("3. Exit Vehicle");
+            System.out.println("4. Display Active Tickets");
+            System.out.println("5. Display Parking Status");
+            System.out.println("6. Back");
+            System.out.print("Enter Choice: ");
 
-        System.out.println("\n--- Parking Lot Status (Occupied) ---");
-        parkingManager.displayParkingStatus();
+            parkingChoice = sc.nextInt();
+            sc.nextLine();
 
-        System.out.println("\n--- Exiting Parked Vehicle ---");
-        ParkingTicket completedTicket = parkingManager.exitVehicle("PB01AB1234");
-        if (completedTicket != null) {
-            System.out.println("Vehicle exited successfully.");
-            completedTicket.displayTicketDetails();
-        } else {
-            System.out.println("Vehicle is not parked.");
-        }
+            switch (parkingChoice) {
 
-        System.out.println("\n--- Parking Lot Status (After Exit) ---");
-        parkingManager.displayParkingStatus();
+                case 1:
 
-        // BILLING, VALIDATION, PAYMENT AND HISTORY
-        try {
-            InputValidator validator = new InputValidator();
-            ParkingHistory history = new ParkingHistory();
+                    System.out.print("Enter Vehicle Registration Number: ");
+                    String parkNo = sc.nextLine();
 
-            String vehicleNumber = (completedTicket != null)
-                    ? completedTicket.getVehicle().getRegistrationNumber()
-                    : "PB01AB1234";
-            String vehicleType = (completedTicket != null)
-                    ? completedTicket.getVehicle().getVehicleType()
-                    : "Car";
-            int hours = (completedTicket != null && completedTicket.getParkingDurationMinutes() > 0)
-                    ? (int) Math.ceil(completedTicket.getParkingDurationMinutes() / 60.0)
-                    : 3;
+                    Vehicle vehicle = registry.searchVehicle(parkNo);
 
-            // Input Validation
-            if (!validator.isValidVehicleNumber(vehicleNumber)) {
-                throw new ParkingException("Invalid vehicle number!");
+                    if (vehicle == null) {
+
+                        System.out.println("Vehicle not registered.");
+
+                    } else {
+
+                        ParkingTicket ticket = parkingManager.parkVehicle(vehicle);
+
+                        if (ticket != null) {
+
+                            System.out.println("Vehicle parked successfully.");
+
+                            ticket.displayTicketDetails();
+
+                        } else {
+
+                            System.out.println("Parking Failed.");
+
+                        }
+
+                    }
+
+                    break;
+
+                case 2:
+
+                    System.out.print("Enter Registration Number: ");
+                    String searchNo = sc.nextLine();
+
+                    ParkingTicket foundTicket = parkingManager.searchParkedVehicle(searchNo);
+
+                    if (foundTicket != null) {
+
+                        foundTicket.displayTicketDetails();
+
+                    } else {
+
+                        System.out.println("Vehicle not parked.");
+
+                    }
+
+                    break;
+
+                case 3:
+
+                    System.out.print("Enter Registration Number: ");
+                    String exitNo = sc.nextLine();
+
+                    ParkingTicket completedTicket = parkingManager.exitVehicle(exitNo);
+
+                    if (completedTicket != null) {
+
+                        completedTicket.displayTicketDetails();
+
+                        try {
+
+                            InputValidator validator = new InputValidator();
+
+                            String vehicleNumber = completedTicket.getVehicle().getRegistrationNumber();
+
+                            String vehicleType = completedTicket.getVehicle().getVehicleType();
+
+                            int hours = (int) Math.ceil(completedTicket.getParkingDurationMinutes() / 60.0);
+
+                            if (hours <= 0)
+                                hours = 1;
+
+                            if (!validator.isValidVehicleNumber(vehicleNumber))
+                                throw new ParkingException("Invalid Vehicle Number");
+
+                            if (!validator.isValidVehicleType(vehicleType))
+                                throw new ParkingException("Invalid Vehicle Type");
+
+                            if (!validator.isValidHours(hours))
+                                throw new ParkingException("Invalid Hours");
+
+                            Billing bill = new Billing(vehicleNumber, hours);
+
+                            bill.generateBill(vehicleType);
+
+                            double amount = bill.getTotalAmount();
+
+                            System.out.print("Enter Payment Method (UPI/Cash/Card): ");
+                            String method = sc.nextLine();
+
+                            Payment payment = new Payment(amount, method);
+
+                            payment.makePayment();
+
+                            payment.displayPayment();
+
+                            history.addRecord(vehicleNumber,
+                                    vehicleType,
+                                    hours,
+                                    amount);
+
+                        }
+
+                        catch (ParkingException e) {
+
+                            System.out.println(e.getMessage());
+
+                        }
+
+                    }
+
+                    else {
+
+                        System.out.println("Vehicle not parked.");
+
+                    }
+
+                    break;
+
+                case 4:
+
+                    parkingManager.displayActiveTickets();
+
+                    break;
+
+                case 5:
+
+                    parkingManager.displayParkingStatus();
+
+                    break;
+
+                case 6:
+
+                    System.out.println("Returning...");
+
+                    break;
+
+                default:
+
+                    System.out.println("Invalid Choice.");
+
             }
 
-            if (!validator.isValidVehicleType(vehicleType)) {
-                throw new ParkingException("Invalid vehicle type!");
-            }
+        } while (parkingChoice != 6);
 
-            if (!validator.isValidHours(hours)) {
-                throw new ParkingException("Invalid parking hours!");
-            }
-
-            System.out.println("\n--- Billing ---");
-
-            // Billing and Rate Calculation
-            Billing bill = new Billing(vehicleNumber, hours);
-            bill.generateBill(vehicleType);
-
-            double amount = bill.getTotalAmount();
-
-            // Payment
-            System.out.println("\n--- Payment ---");
-            Payment payment = new Payment(amount, "UPI");
-            payment.makePayment();
-            payment.displayPayment();
-
-            // Parking History
-            System.out.println("\n--- Parking History ---");
-            history.addRecord(vehicleNumber, vehicleType, hours, amount);
-            history.displayHistory();
-
-        } catch (ParkingException e) {
-            System.out.println("Error: " + e.getMessage());
-        }
+        sc.close();
     }
 }
