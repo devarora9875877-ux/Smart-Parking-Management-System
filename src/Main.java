@@ -147,7 +147,8 @@ public class Main {
             System.out.println("3. Exit Vehicle");
             System.out.println("4. Display Active Tickets");
             System.out.println("5. Display Parking Status");
-            System.out.println("6. Back");
+            System.out.println("6. Display Parking History");
+            System.out.println("7. Back");
             System.out.print("Enter Choice: ");
 
             parkingChoice = sc.nextInt();
@@ -290,6 +291,12 @@ public class Main {
 
                 case 6:
 
+                    history.displayHistory();
+
+                    break;
+
+                case 7:
+
                     System.out.println("Returning...");
 
                     break;
@@ -300,7 +307,7 @@ public class Main {
 
             }
 
-        } while (parkingChoice != 6);
+        } while (parkingChoice != 7);
 
         sc.close();
     }
